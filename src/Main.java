@@ -1,167 +1,170 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
-
-        System.out.println("Hello world!");
-        GeneratorHasla generatorHasla = new GeneratorHasla();
-        //System.out.println(generatorHasla.fyrlanie("abcdefgh"));
-        generatorHasla.generujHasloProste(10,true,false,true);
-        System.out.println(generatorHasla.getHaslo());
-        generatorHasla.generujHasloRowne(10,true,true,true);
-        System.out.println(generatorHasla.getHaslo());
-        /*System.out.println("Wylosowana tablica:");
-        int[] tablica = wylosujDoTablicy(20, 1, 100);
-        System.out.println(Arrays.toString(tablica));
-        System.out.println("Wylosowana Lista");
-        ArrayList<Integer> wylosowanaLista = wylosujListe(20, 1, 100);
-        System.out.println(wylosowanaLista);
-
-        Scanner scanner = new Scanner(System.in);
-        tablica = sortujBabelkowo(tablica);
-        System.out.println("Po Sortowaniu");
-        System.out.println(Arrays.toString(tablica));
-        System.out.println("Podaj szukaną liczbę w tablicy");
-        int szukana = scanner.nextInt();
-
-        int indeksSzukanej = wyszukajBinarnie(tablica, szukana);
-        if (indeksSzukanej > -1) {
-            System.out.println(String.format("%d znaleziono pod indeksem %d", szukana, indeksSzukanej));
-        } else {
-            System.out.println("Wartość nie została znaleziona");
-        }
-        szukana = scanner.nextInt();
-        int indeksSzukanej2 = wyszukajLiniowo(wylosowanaLista, szukana);
-        if (indeksSzukanej2 > -1) {
-            System.out.println(String.format("%d znaleziono pod indeksem %d", szukana, indeksSzukanej2));
-        } else {
-            System.out.println("Wartość nie została znaleziona");
-        }*/
-    }
-
-    private static ArrayList<Integer> wylosujListe(int n, int a, int b) {
-        ArrayList<Integer> wylosowana = new ArrayList<>();
-        Random random = new Random();
-        for (int i = 0; i < n; i++) {
-            wylosowana.add(random.nextInt(a, b + 1));
-        }
-        return wylosowana;
+        System.out.println("Testowanie metody mieszającej litery");
+        System.out.println(fyrlaj("abcde"));
+        System.out.println("Testowanie generatora haseł");
+        System.out.println(generujProsteHaslo(10, true, true, true));
+        System.out.println(generujRowneHaslo(14, true, true, true));
+        System.out.println(generujSuperHaslo(14, true, true, true));
     }
 
     /**
-     * złożoność obliczeniowa O(n) liniowa
+     * Generowanie hasła o  mniejwięcej równej liczbie różnych znaków
      *
-     * @param n - liczba losowanych elementów
-     * @param a - początek zakresu losowania
-     * @param b - koniec zakresu losowania
+     * @param liczbaznakow
+     * @param czyDuze
+     * @param czyCyfry
+     * @param czyZnaki
      * @return
      */
-    private static int[] wylosujDoTablicy(int n, int a, int b) {
-        int[] wylosowanaTablica = new int[n];
+    private static String generujSuperHaslo(int liczbaznakow, boolean czyDuze, boolean czyCyfry, boolean czyZnaki) {
+        String haslo = "";
         Random random = new Random();
-        for (int i = 0; i < wylosowanaTablica.length; i++) {
-            wylosowanaTablica[i] = random.nextInt(a, b + 1);
+        String duzeLitery = "QWERTYUIOPLKJHGFDSAZXCVBNM";
+        String cyfry = "0123456789";
+        String znakiSpecjalne = "!@#$%^&*()_+=-?<>,.";
+        String male = "qwertyuioplkjhgfdsazxcvbnm";
+        //co najmniej 1 litera
+        haslo = haslo + male.charAt(random.nextInt(male.length()));
+
+        if (czyDuze && haslo.length() < liczbaznakow) {
+            haslo = haslo + duzeLitery.charAt(random.nextInt(duzeLitery.length()));
         }
-        return wylosowanaTablica;
+        if (czyZnaki && haslo.length() < liczbaznakow) {
+            haslo = haslo + znakiSpecjalne.charAt(random.nextInt(znakiSpecjalne.length()));
+        }
+        if (czyCyfry && haslo.length() < liczbaznakow) {
+            haslo = haslo + cyfry.charAt(random.nextInt(cyfry.length()));
+        }
+
+        while (haslo.length() < liczbaznakow) {
+            int ktora = random.nextInt(3);
+            switch (ktora) {
+                case 0:
+                    if (czyDuze && haslo.length() < liczbaznakow) {
+                        haslo = haslo + duzeLitery.charAt(random.nextInt(duzeLitery.length()));
+                    }
+                    break;
+                case 1:
+                    if (czyZnaki && haslo.length() < liczbaznakow) {
+                        haslo = haslo + znakiSpecjalne.charAt(random.nextInt(znakiSpecjalne.length()));
+                    }
+                    break;
+                case 2:
+                    if (czyCyfry && haslo.length() < liczbaznakow) {
+                        haslo = haslo + cyfry.charAt(random.nextInt(cyfry.length()));
+                    }
+                    break;
+                default:
+                    haslo = haslo + male.charAt(random.nextInt(male.length()));
+                    break;
+            }
+        }
+
+        haslo = fyrlaj(haslo);
+        return haslo;
+    }
+
+    private static String generujRowneHaslo(int liczbaznakow, boolean czyDuze, boolean czyCyfry, boolean czyZnaki) {
+        String haslo = "";
+        Random random = new Random();
+        String duzeLitery = "QWERTYUIOPLKJHGFDSAZXCVBNM";
+        int ileRodzajow = 1;
+        if (czyCyfry) {
+            ileRodzajow++;
+        }
+        if (czyDuze) {
+            ileRodzajow++;
+        }
+        if (czyZnaki) {
+            ileRodzajow++;
+        }
+        int minimalnaLiczbaZnakowDanegoRodzaju = liczbaznakow / ileRodzajow;
+        if (czyDuze)
+            for (int i = 0; i < minimalnaLiczbaZnakowDanegoRodzaju; i++) {
+                haslo = haslo + duzeLitery.charAt(random.nextInt(duzeLitery.length()));
+            }
+        String cyfry = "0123456789";
+        if (czyCyfry) {
+            for (int i = 0; i < minimalnaLiczbaZnakowDanegoRodzaju; i++) {
+                haslo = haslo + cyfry.charAt(random.nextInt(cyfry.length()));
+            }
+        }
+        String znakiSpecjalne = "!@#$%^&*()_+=-?<>,.";
+        if (czyZnaki) {
+            for (int i = 0; i < minimalnaLiczbaZnakowDanegoRodzaju; i++) {
+                haslo = haslo + znakiSpecjalne.charAt(random.nextInt(znakiSpecjalne.length()));
+            }
+        }
+        String male = "qwertyuioplkjhgfdsazxcvbnm";
+
+        for (int i = 0; i < minimalnaLiczbaZnakowDanegoRodzaju; i++) {
+            haslo = haslo + male.charAt(random.nextInt(male.length()));
+        }
+        if (czyDuze && haslo.length() < liczbaznakow) {
+            haslo = haslo + duzeLitery.charAt(random.nextInt(duzeLitery.length()));
+        }
+        if (czyZnaki && haslo.length() < liczbaznakow) {
+            haslo = haslo + znakiSpecjalne.charAt(random.nextInt(znakiSpecjalne.length()));
+        }
+        if (czyCyfry && haslo.length() < liczbaznakow) {
+            haslo = haslo + cyfry.charAt(random.nextInt(cyfry.length()));
+        }
+        haslo = fyrlaj(haslo);
+        return haslo;
     }
 
     /**
-     * @param tablicaDoWypisania
-     */
-    private static void wypiszTablice(int[] tablicaDoWypisania) {
-
-    }
-
-    private static int wyszukajLiniowo(int[] tablicaZLiczbami, int szukanaWartosc) {
-        for (int i = 0; i < tablicaZLiczbami.length; i++) {
-            if (szukanaWartosc == tablicaZLiczbami[i]) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private static int wyszukajLiniowo(ArrayList<Integer> listaZliczbami, int szukanaWartosc) {
-        for (int i = 0; i < listaZliczbami.size(); i++) {
-            if (listaZliczbami.get(i).equals(szukanaWartosc)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * złożonośc kwadratowa - O(n^2)
+     * metoda generuje haslo z co najwyzej 1 dużą litera, jedną cyfrą jednym znakiem specjalnym
+     * pozostałe litery są małe
+     * zakladamy że liczba znakow ok
      *
-     * @param tablicaLiczbowa
+     * @param liczbaznakow
+     * @param czyDuze
+     * @param czyCyfry
+     * @param czyZnaki
      * @return
      */
-    private static int[] sortujBabelkowo(int[] tablicaLiczbowa) {
-        boolean zamiana = true;
-        while (zamiana) {
-            zamiana = false;
-            for (int i = 0; i < tablicaLiczbowa.length  - 1; i++) {
-                if (tablicaLiczbowa[i] > tablicaLiczbowa[i + 1]) {
-                    int pomoc = tablicaLiczbowa[i];
-                    tablicaLiczbowa[i] = tablicaLiczbowa[i + 1];
-                    tablicaLiczbowa[i + 1] = pomoc;
-                    zamiana = true;
-                }
-            }
+    private static String generujProsteHaslo(int liczbaznakow, boolean czyDuze, boolean czyCyfry, boolean czyZnaki) {
+        String haslo = "";
+        Random random = new Random();
+        String duzeLitery = "QWERTYUIOPLKJHGFDSAZXCVBNM";
+        if (czyDuze) {
+            haslo = haslo + duzeLitery.charAt(random.nextInt(duzeLitery.length()));
         }
-
-        return tablicaLiczbowa;
-    }
-    private static ArrayList<Integer> sortujBabelkowo(ArrayList<Integer> listaLiczbowa) {
-        boolean zamiana = true;
-        while (zamiana) {
-            zamiana = false;
-            for (int i = 0; i < listaLiczbowa.size() - 1; i++) {
-               if(listaLiczbowa.get(i)>listaLiczbowa.get(i+1)){
-                   int pomoc = listaLiczbowa.get(i);
-                   listaLiczbowa.set(i,listaLiczbowa.get(i+1));
-                   listaLiczbowa.set(i+1,pomoc);
-                   zamiana = true;
-                }
-            }
+        String cyfry = "0123456789";
+        if (czyCyfry) {
+            haslo = haslo + cyfry.charAt(random.nextInt(cyfry.length()));
         }
-
-        return listaLiczbowa;
-    }
-
-
-    /**
-     * @param tablicaZLiczbami  - uporządkowana tablica liczb całkowitych
-     * @param szukanaWartosc
-     * @return
-     */
-    private static int wyszukajBinarnie(int[] tablicaZLiczbami, int szukanaWartosc) {
-        //Arrays.binarySearch(tablicaZLiczbami,szukanaWartosc);
-        int poczatek = 0;
-        int koniec = tablicaZLiczbami.length-1;
-        int srodek;
-        while (poczatek<=koniec){
-            srodek = (poczatek+koniec) /2;
-            if(szukanaWartosc>tablicaZLiczbami[srodek]){
-                poczatek = srodek+1;
-            }
-            else if(szukanaWartosc<tablicaZLiczbami[srodek]){
-                koniec =srodek -1;
-            }
-            else{
-                return srodek;
-            }
+        String znakiSpecjalne = "!@#$%^&*()_+=-?<>,.";
+        if (czyZnaki) {
+            haslo = haslo + znakiSpecjalne.charAt(random.nextInt(znakiSpecjalne.length()));
         }
-
-
-        return -1;
+        String male = "qwertyuioplkjhgfdsazxcvbnm";
+        int dlugosc = haslo.length();
+        for (int i = dlugosc; i < liczbaznakow; i++) {
+            haslo = haslo + male.charAt(random.nextInt(male.length()));
+        }
+        haslo = fyrlaj(haslo);
+        return haslo;
     }
 
-    private static int wyszukajBinarnie(ArrayList<Integer> listaZLiczbami, int szukanaWartosc) {
-        return -1;
+    private static String fyrlaj(String hasloDoFyrlania) {
+        //Collections.shuffle();
+        Random random = new Random();
+        for (int i = 0; i < hasloDoFyrlania.length(); i++) {
+            int losowyIndeks = random.nextInt(hasloDoFyrlania.length());
+            char pierwszaLitera = hasloDoFyrlania.charAt(losowyIndeks);
+            char drugaLitera = hasloDoFyrlania.charAt(i);
+            hasloDoFyrlania = hasloDoFyrlania.substring(0, losowyIndeks) + drugaLitera +
+                    hasloDoFyrlania.substring(losowyIndeks + 1);
+            hasloDoFyrlania = hasloDoFyrlania.substring(0, i) + pierwszaLitera +
+                    hasloDoFyrlania.substring(i + 1);
+        }
+        return hasloDoFyrlania;
     }
+
 }
